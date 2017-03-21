@@ -32,6 +32,9 @@ namespace BenchmarkDotNet.Columns
         public bool AlwaysShow => false;
         public ColumnCategory Category => ColumnCategory.Job;
         public int PriorityInCategory => 0;
+        public QuantityType QuantityType => QuantityType.None;
+        public string GetName(ISummaryStyle style) => ColumnName;
+        public string GetValue(Summary summary, Benchmark benchmark, ISummaryStyle style) => GetValue(summary, benchmark);
 
         public bool IsDefault(Summary summary, Benchmark benchmark) => !benchmark.Job.HasValue(characteristic);
 

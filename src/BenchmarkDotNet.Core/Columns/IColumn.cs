@@ -30,5 +30,10 @@ namespace BenchmarkDotNet.Columns
         /// Defines order of column in the same category.
         /// </summary>
         int PriorityInCategory { get; }
+
+        QuantityType QuantityType { get; }
+
+        string GetName(ISummaryStyle style);
+        string GetValue(Summary summary, Benchmark benchmark, ISummaryStyle style);
     }
 }

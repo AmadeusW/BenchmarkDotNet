@@ -62,13 +62,28 @@ namespace BenchmarkDotNet.Diagnosers
             public bool AlwaysShow => true;
             public ColumnCategory Category => ColumnCategory.Diagnoser;
             public int PriorityInCategory => 0;
+            public QuantityType QuantityType => QuantityType.Size;
+            public string GetValue(Summary summary, Benchmark benchmark) => GetValue(summary, benchmark, SummaryStyle.Default);
 
-            public string GetValue(Summary summary, Benchmark benchmark)
+            public string GetValue(Summary summary, Benchmark benchmark, ISummaryStyle style)
             {
                 if (!results.ContainsKey(benchmark) || benchmark.Job.Env.Runtime is MonoRuntime)
                     return "N/A";
 
-                return results[benchmark].BytesAllocatedPerOperation.ToFormattedBytes();
+                var value = results[benchmark].BytesAllocatedPerOperation;
+                return QuantityType == QuantityType.Size ? value.ToSizeStr(style.SizeUnit, 1, style.PrintUnitsInContent) : ((double)value).ToStr();
+            }
+
+            public string GetName(ISummaryStyle style)
+            {
+                if (style.PrintUnitsInHeader)
+                {
+                    return $"{ColumnName} [{style.SizeUnit.Name}]";
+                }
+                else
+                {
+                    return ColumnName;
+                }
             }
         }
 
@@ -90,6 +105,9 @@ namespace BenchmarkDotNet.Diagnosers
             public bool AlwaysShow => true;
             public ColumnCategory Category => ColumnCategory.Diagnoser;
             public int PriorityInCategory => 0;
+            public QuantityType QuantityType => QuantityType.None;
+            public string GetName(ISummaryStyle style) => ColumnName;
+            public string GetValue(Summary summary, Benchmark benchmark, ISummaryStyle style) => GetValue(summary, benchmark);
 
             public bool IsAvailable(Summary summary)
                 => summary.Reports.Any(report => report.GcStats.GetCollectionsCount(generation) != 0);
