@@ -9,8 +9,10 @@ namespace BenchmarkDotNet.Reports
         bool PrintUnitsInContent { get; }
         SizeUnit SizeUnit { get; }
         TimeUnit TimeUnit { get; }
+        string DecimalFormat { get; set; }
 
         ISummaryStyle WithTimeUnit(TimeUnit timeUnit);
         ISummaryStyle WithSizeUnit(SizeUnit sizeUnit);
+        ISummaryStyle WithDecimalFormat(int count);
     }
 }

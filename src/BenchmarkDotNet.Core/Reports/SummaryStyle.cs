@@ -14,6 +14,7 @@ namespace BenchmarkDotNet.Reports
         public bool PrintUnitsInContent { get; set; } = true;
         public SizeUnit SizeUnit { get; set; } = null;
         public TimeUnit TimeUnit { get; set; } = null;
+        public string DecimalFormat { get; set; } = null;
 
         public static SummaryStyle Default => new SummaryStyle()
         {
@@ -30,7 +31,8 @@ namespace BenchmarkDotNet.Reports
                 PrintUnitsInHeader = this.PrintUnitsInHeader,
                 PrintUnitsInContent = this.PrintUnitsInContent,
                 SizeUnit = this.SizeUnit,
-                TimeUnit = timeUnit
+                TimeUnit = timeUnit,
+                DecimalFormat = this.DecimalFormat,
             };
         }
 
@@ -41,8 +43,38 @@ namespace BenchmarkDotNet.Reports
                 PrintUnitsInHeader = this.PrintUnitsInHeader,
                 PrintUnitsInContent = this.PrintUnitsInContent,
                 SizeUnit = sizeUnit,
-                TimeUnit = this.TimeUnit
+                TimeUnit = this.TimeUnit,
+                DecimalFormat = this.DecimalFormat,
             };
+        }
+
+        public ISummaryStyle WithDecimalFormat(int count)
+        {
+            var decimalFormat = "F" + count.ToString();
+            return new SummaryStyle()
+            {
+                PrintUnitsInHeader = this.PrintUnitsInHeader,
+                PrintUnitsInContent = this.PrintUnitsInContent,
+                SizeUnit = this.SizeUnit,
+                TimeUnit = this.TimeUnit,
+                DecimalFormat = decimalFormat,
+            };
+        }
+
+        internal static int GetBestDecimalCount(double[] timeData)
+        {
+            if (timeData.Length == 0)
+                return 0;
+            double smallestNumber = timeData.Min();
+
+            var asString = smallestNumber.ToString();
+            var digitsBeforeSeparator = asString.IndexOf('.');
+            if (digitsBeforeSeparator == -1)
+                return 1;
+            return 4 - digitsBeforeSeparator;
+            //var digitsAfterSeparator = asString.Length - digitsBeforeSeparator - 1;
+
+
         }
     }
 }

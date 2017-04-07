@@ -39,9 +39,14 @@ namespace BenchmarkDotNet.Reports
             
             // Ensure we have all required data for styling
             style = style ?? SummaryStyle.Default;
-            if (style.TimeUnit == null)
+            if (style.TimeUnit == null || style.DecimalFormat == null)
             {
-                style = style.WithTimeUnit(TimeUnit.GetBestTimeUnit(summary.Reports.Where(r => r.ResultStatistics != null).Select(r => r.ResultStatistics.Mean).ToArray()));
+                var timeData = summary.Reports.Where(r => r.ResultStatistics != null).Select(r => r.ResultStatistics.Mean).ToArray();
+
+                if (style.TimeUnit == null)
+                    style = style.WithTimeUnit(TimeUnit.GetBestTimeUnit(timeData));
+                if (style.DecimalFormat == null)
+                    style = style.WithDecimalFormat(SummaryStyle.GetBestDecimalCount(timeData));
             }
             if (style.SizeUnit == null)
             {
